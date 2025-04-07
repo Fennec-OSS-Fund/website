@@ -1,4 +1,5 @@
 "use client"
+import Link from "next/link"
 
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -21,14 +22,14 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  projectName: z.string().min(2, {
-    message: "Project name must be at least 2 characters.",
-  }),
-  projectUrl: z.string().url({
+  issueUrl: z.string().min(2, {
     message: "Please enter a valid URL.",
   }),
-  projectDescription: z.string().min(50, {
-    message: "Description must be at least 50 characters.",
+  GitHubUrl: z.string().url({
+    message: "Please enter a valid URL.",
+  }),
+  Description: z.string().min(50, {
+    message: "Description must be at least 30 characters.",
   }),
   fundingAmount: z.enum(["100", "200", "300", "400", "500"], {
     message: "Please select a funding amount.",
@@ -49,11 +50,10 @@ export default function ApplyPage() {
     defaultValues: {
       name: "",
       email: "",
-      projectName: "",
-      projectUrl: "",
-      projectDescription: "",
+      issueUrl: "",
+      GitHubUrl: "",
+      Description: "",
       fundingPurpose: "",
-      termsAccepted: false,
     },
   })
 
@@ -96,20 +96,26 @@ export default function ApplyPage() {
     <div className="container py-12">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">Apply for Funding</h1>
-          <p className="text-gray-500 dark:text-gray-400">Submit your open-source project for consideration</p>
+          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">Fennec OSS Fund</h1>
+          <p className="text-gray-500 dark:text-gray-400">Submit the open-source project you would like to contribute to and information about the issue you will be working on.
+          {" "}
+                <Link
+                  href="/main-page"
+                  className="underline text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-white transition-colors"
+                >
+                    Application process and criteria
+                </Link> 
+          </p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Application Form</CardTitle>
-            <CardDescription>Please provide details about yourself and your open-source project</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Personal Information</h3>
                   <FormField
                     control={form.control}
                     name="name"
@@ -117,7 +123,7 @@ export default function ApplyPage() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your name" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -128,9 +134,9 @@ export default function ApplyPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Email Adress</FormLabel>
                         <FormControl>
-                          <Input placeholder="your.email@example.com" {...field} />
+                          <Input  {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -139,15 +145,27 @@ export default function ApplyPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Project Information</h3>
                   <FormField
                     control={form.control}
-                    name="projectName"
+                    name="GitHubUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project Name</FormLabel>
+                        <FormLabel>GitHub Profile URL</FormLabel>
                         <FormControl>
-                          <Input placeholder="Name of your open-source project" {...field} />
+                          <Input  {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                                    <FormField
+                    control={form.control}
+                    name="issueUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Issue URL</FormLabel>
+                        <FormControl>
+                          <Input  {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -155,27 +173,13 @@ export default function ApplyPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="projectUrl"
+                    name="Description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://github.com/yourusername/project" {...field} />
-                        </FormControl>
-                        <FormDescription>Link to your GitHub repository or project website</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="projectDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project Description</FormLabel>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Describe your project, its purpose, and its current state"
+                            placeholder="Describe the issue you want to work on, what you will be doing, how long it will take to finish and the starting date."
                             className="min-h-[120px]"
                             {...field}
                           />
@@ -186,8 +190,7 @@ export default function ApplyPage() {
                   />
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Funding Details</h3>
+                <div className="space-y-4 pb-10 ">
                   <FormField
                     control={form.control}
                     name="fundingAmount"
@@ -214,45 +217,7 @@ export default function ApplyPage() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="fundingPurpose"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>How will you use the funds?</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Explain how you plan to use the funding to advance your project"
-                            className="min-h-[120px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="termsAccepted"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>I agree to the terms and conditions</FormLabel>
-                        <FormDescription>
-                          By submitting this application, you agree to share your project details and allow us to
-                          showcase your work if selected.
-                        </FormDescription>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
                   Submit Application
                   <ArrowRight className="ml-2 h-4 w-4" />
